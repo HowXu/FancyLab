@@ -10,7 +10,7 @@ class User(Base):
 
     username: Mapped[str] = mapped_column(String(50), comment="account", nullable=False)
     password: Mapped[str] = mapped_column(
-        String(50), comment="password", nullable=False
+        String(128), comment="password", nullable=False
     )
     name: Mapped[str] = mapped_column(String(50), comment="nickname", nullable=False)
     role: Mapped[str] = mapped_column(
