@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api import router as api_router
@@ -10,6 +11,7 @@ from app.common.exception import (
     service_exception_handler,
     validation_exception_handler,
 )
+from app.config import UPLOAD_DIR
 from app.database import Base, engine
 
 app = FastAPI()
@@ -30,6 +32,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 @app.get("/")

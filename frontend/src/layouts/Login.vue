@@ -3,18 +3,18 @@
         <div class="login-box">
             <h1 style="font-size: 28px;"> 实验室预约系统</h1>
             <div style="margin-top: 5px; margin-bottom: 30px;">Work with Agent</div>
-            <el-form :model='form' label-width="auto" style="max-width: 600px;">
-                <el-form-item>
+            <el-form ref="formRef" :rules="rules" :model='form' label-width="0px" style="max-width: 600px;">
+                <el-form-item prop="username">
                     <el-input size="large" v-model="form.username" placeholder="请输入账号" :prefix-icon="User" />
                 </el-form-item>
-                <el-form-item>
+                <el-form-item prop="password">
                     <el-input type="password" size="large" v-model="form.password" placeholder="请输入密码"
                         :prefix-icon="Lock" show-password />
                 </el-form-item>
                 <div> <el-button size="large" type="primary" style="width: 100%" @click="login"
                         :loading="loadingValue">登录</el-button>
-                    <div style="text-align: right; margin-top: 20px;"> 还没有账号? 请<a
-                            style="color: var(--el-color-primary);" href="/register">注册</a></div>
+                    <div style="text-align: right; margin-top: 20px;"> 还没有账号? 请<router-link
+                            style="color: var(--el-color-primary);" to="/register">注册</router-link></div>
                 </div>
             </el-form>
         </div>
@@ -34,17 +34,25 @@ const form = reactive({
     password: ''
 })
 
+const formRef = ref()
+const rules = { username: [{ required: true, message: '请输入账号', trigger: 'blur' }], password: [{ required: true, message: '请输入密码', trigger: 'blur' }] }
+
 const { saveLoginData } = useUser()
 const loadingValue = ref(false)
 
 const login = async function () {
+    const valid = await formRef.value.validate().catch(() => false)
+    if (!valid) return
     loadingValue.value = true
-    const response = await loginApi(form)
-    loadingValue.value = false
-    if (response.code === 200 && response.data !== null) {
-        saveLoginData(response.data)
-        ElMessage.success('登录成功')
-        router.push('/home')
+    try {
+        const response = await loginApi(form)
+        if (response.code === 200 && response.data !== null) {
+            saveLoginData(response.data)
+            ElMessage.success('登录成功')
+            await router.push('/home')
+        }
+    } finally {
+        loadingValue.value = false
     }
 }
 </script>

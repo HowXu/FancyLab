@@ -24,3 +24,16 @@ export interface LoginResult{
     message: string
     data: AccountSessionData | null
 }
+
+export interface RegisterData{
+    username: string
+    password: string
+    name: string
+}
+
+
+export interface RegisterResult{
+    code: number
+    message: string
+    data: null
+}

@@ -28,7 +28,7 @@ class Base(DeclarativeBase):
     update_time: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now,
-        update_time=datetime.now,
+        onupdate=datetime.now,
         comment="更新时间",
         sort_order=2,
     )

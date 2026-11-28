@@ -4,6 +4,24 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+UPLOAD_DIR = BASE_DIR / "uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+MAX_FILE_SIZE = 100 * 1024 * 1024
+
+ALLOWED_EXTENSIONS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".zip",
+}
+
 
 load_dotenv(verbose=True, dotenv_path=BASE_DIR / ".env")
 
