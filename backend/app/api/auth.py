@@ -3,9 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.common.exception import ServiceException
+from app.common.response import Response
 from app.database import get_db
 from app.models.user import User
-from app.schemas.auth import LoginRequest
+from app.schemas.auth import LoginRequest, LoginResponse
 from app.schemas.user import UserResponse
 from app.utils.jwt import create_access_token
 from app.utils.password import verify_password
@@ -18,15 +20,13 @@ def auth(data: LoginRequest, db: Annotated[Session, Depends(get_db)]):
     user = db.query(User).filter(User.username == data.username).first()
 
     if not user or not verify_password(data.password, user.password):
-        return {"code": 400, "message": "Error username or password"}
+        raise ServiceException(message="Wrong account or password")
 
     if user.status != 1:
-        return {"code": 403, "message": "The account is been banned"}
+        raise ServiceException(message="The account is banned")
 
     token = create_access_token(user.id)
 
-    return {
-        "code": 200,
-        "message": "Ok",
-        "data": {"token": token, "user": UserResponse.model_validate(user)},
-    }
+    return Response.success(
+        data=LoginResponse(token=token, user=UserResponse.model_validate(user))
+    )
