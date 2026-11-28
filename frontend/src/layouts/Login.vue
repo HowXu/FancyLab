@@ -22,7 +22,9 @@
 </template>
 
 <script setup lang="ts">
+import { loginApi } from '@/api/auth';
 import router from '@/router';
+import { useUser } from '@/utils/user';
 import { User, Lock } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
 import { reactive, ref } from 'vue';
@@ -32,16 +34,18 @@ const form = reactive({
     password: ''
 })
 
+const { saveLoginData } = useUser()
 const loadingValue = ref(false)
 
-const login = function () {
+const login = async function () {
     loadingValue.value = true
-    setTimeout(() => {
-        loadingValue.value = false
+    const response = await loginApi(form)
+    loadingValue.value = false
+    if (response.code === 200 && response.data !== null) {
+        saveLoginData(response.data)
         ElMessage.success('登录成功')
         router.push('/home')
-
-    }, 2000)
+    }
 }
 </script>
 
